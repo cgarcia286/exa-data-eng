@@ -1,0 +1,4 @@
+# Core dependencies
+#############################################################################
+psycopg2-binary==2.9.7      # https://www.psycopg.org/docs/
+SQLAlchemy==2.0.20          # https://docs.sqlalchemy.org/en/20/

@@ -15,7 +15,26 @@ from database.models.patient import AddressModel, HumanNameModel, PatientModel
 LOGGER = setup_logger(__name__)
 
 
-def load_fhir_data(path: str):
+def load_fhir_data(path: str) -> list:
+    """
+    Loads FHIR data from JSON files in a specified directory and returns a list
+    of transformed data.
+
+    :param str path: The directory path where the JSON files containing FHIR
+    data are located.
+
+    :return list: A list of transformed FHIR data.
+
+    This function reads JSON files from the specified directory, parses each
+    file's content as FHIR data, and extends the transformed_data list with
+    the parsed data. If an error occurs while loading or parsing a file,
+    an error message is logged, and processing continues with the next file.
+
+    :raises OSError: If there is an issue with reading files from the
+    directory.
+    :raises json.JSONDecodeError: If there is an issue decoding JSON content
+    from a file.
+    """
     LOGGER.info(f'Loading Data from {path} directory')
     transformed_data = []
 
@@ -54,11 +73,13 @@ def parse_fhir_data(fhir_data: json) -> list:
 
 def parse_patient_data(patient: Patient) -> dict:
     """
-    _summary_
+    Parses patient information from a FHIR Patient resource and returns a
+    dictionary representing the parsed data.
 
-    :param Patient patient: _description_
+    :param Patient patient: A FHIR Patient resource object containing patient
+    information.
 
-    :return dict: _description_
+    :return dict: A dictionary containing the parsed patient data
     """
     identifiers = _get_identifiers(patient.identifier)
     social_security_number = identifiers['social_security_number']
@@ -103,12 +124,16 @@ def parse_patient_data(patient: Patient) -> dict:
 
 def parse_patient_names(patient: Patient, names: List[HumanName]) -> dict:
     """
-    _summary_
+    Parses a list of HumanName objects from a FHIR Patient resource and returns
+    a list of dictionaries representing the parsed names.
 
-    :param Patient patient: _description_
-    :param List[HumanName] names: _description_
+    :param Patient patient: A FHIR Patient resource object containing patient
+    information.
+    :param List[HumanName] names: A list of HumanName objects containing
+    patient name information.
 
-    :return dict: _description_
+    :return List[dict]: A list of dictionaries where each dictionary represents
+    a parsed patient name.
     """
     parsed_patient_names = []
 
@@ -137,12 +162,16 @@ def parse_patient_addresses(
     addresses: List[Address]
 ) -> dict:
     """
-    _summary_
+    Parses a list of Address objects from a FHIR Patient resource and returns a
+    list of dictionaries representing the parsed addresses.
 
-    :param Patient patient: _description_
-    :param List[Address] addresses: _description_
+    :param Patient patient: A FHIR Patient resource object containing patient
+    information.
+    :param List[Address] addresses: A list of Address objects containing
+    patient address information.
 
-    :return dict: _description_
+    :return List[dict]: A list of dictionaries where each dictionary
+    represents a parsed patient address.
     """
     parsed_patient_addresses = []
 
@@ -166,10 +195,15 @@ def parse_patient_addresses(
 
 def _get_identifiers(identifiers: List[Identifier]) -> dict:
     """
-    _summary_
+    Extracts specific identifier types from a list of Identifier objects and
+    returns a dictionary containing the extracted data.
 
-    :param List[Identifier] identifiers: _description_
-    :return dict: _description_
+    :param List[Identifier] identifiers: A list of Identifier objects
+    containing patient identifier information.
+
+    :return dict: A dictionary containing extracted identifier data.
+
+    NOTE: this should be replaced with the Identifier FHIR data type.
     """
     for identifier in identifiers:
         display = identifier.type

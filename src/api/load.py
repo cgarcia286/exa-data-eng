@@ -14,10 +14,21 @@ LOGGER = setup_logger(__name__)
 
 def store_data_in_database(session: Session, parsed_data: List[dict]):
     """
-    _summary_
+    Stores patient data in a database using an SQLAlchemy session.
 
-    :param Session session: _description_
-    :param List[dict] parsed_data: _description_
+    :param Session session: An active SQLAlchemy session for interacting with
+    the database.
+    :param List[dict] parsed_data: A list of dictionaries containing patient
+    data to be stored.
+
+    The function takes an active SQLAlchemy session and a list of dictionaries
+    representing patient data.
+
+    For each patient data dictionary, names and addresses are extracted, and
+    then a patient entry is created or updated in the database using the
+    '_create_or_update_patients' function. Subsequently, name and address
+    entries associated with that patient are created or updated using the
+    '_create_or_update_names' and '_create_or_update_addresses' functions.
     """
     with session:
         for patient_data in parsed_data:
@@ -37,12 +48,20 @@ def _create_or_update_patients(
     patient_data: dict
 ) -> PatientModel:
     """
-    _summary_
+    Creates or updates patient data in the DB using an SQLAlchemy session.
 
-    :param Session session: _description_
-    :param dict patient_data: _description_
+    :param Session session: An active SQLAlchemy session for interacting with
+    the database.
+    :param dict patient_data: A dictionary containing patient data to be
+    created or updated.
 
-    :return PatientModel: _description_
+    :return PatientModel: The created or updated PatientModel instance.
+
+    This function checks if a patient with the specified ID exists in the DB.
+    If the patient exists, it compares the existing data with the provided
+    argument 'patient_data' and updates the fields that have changed. If the
+    patient does not exist, a new patient is added to the database with the
+    provided argument 'patient_data'.
     """
     obj_exists, patient = item_exists(
         PatientModel,
@@ -73,11 +92,21 @@ def _create_or_update_names(
     names: List[HumanName]
 ):
     """
-    _summary_
+    Creates or updates names associated with a patient in the database using an
+    SQLAlchemy session.
 
-    :param Session session: _description_
-    :param PatientModel patient: _description_
-    :param List[HumanName] names: _description_
+    :param Session session: An active SQLAlchemy session for interacting with
+    the database.
+    :param PatientModel patient: The PatientModel instance to which the names
+    are associated.
+    :param List[HumanName] names: A list of HumanName instances representing
+    names to be created or updated.
+
+    This function iterates through the provided list of names for a patient,
+    checks if each name already exists in the database based on the patient's
+    ID, and either adds a new name or updates an existing one. The function
+    compares the provided name data with the existing name data and updates
+    any changed fields.
     """
     for name in names:
         name.__dict__.pop('patient')
@@ -121,11 +150,21 @@ def _create_or_update_addresses(
     addresses: List[Address]
 ):
     """
-    _summary_
+    Creates or updates addresses associated with a patient in the database
+    using an SQLAlchemy session.
 
-    :param Session session: _description_
-    :param PatientModel patient: _description_
-    :param List[Address] addresses: _description_
+    :param Session session: An active SQLAlchemy session for interacting with
+    the database.
+    :param PatientModel patient: The PatientModel instance to which the
+    addresses are associated.
+    :param List[Address] addresses: A list of Address instances representing
+    addresses to be created or updated.
+
+    This function iterates through the provided list of addresses for a
+    patient, checks if each address already exists in the database based on the
+    patient's ID, and either adds a new address or updates an existing one. The
+    function compares the provided address data with the existing address data
+    and updates any changed fields.
     """
     for address in addresses:
         address.__dict__.pop('patient')

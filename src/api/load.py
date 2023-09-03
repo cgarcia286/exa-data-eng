@@ -22,14 +22,14 @@ def store_data_in_database(session: Session, parsed_data: List[dict]):
     with session:
         for patient_data in parsed_data:
             names = patient_data.pop('names')
-            adresses = patient_data.pop('adresses')
+            addresses = patient_data.pop('addresses')
 
             patient: PatientModel = _create_or_update_patients(
                 session,
                 patient_data
             )
             _create_or_update_names(session, patient, names)
-            _create_or_update_addresses(session, patient, adresses)
+            _create_or_update_addresses(session, patient, addresses)
 
 
 def _create_or_update_patients(

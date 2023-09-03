@@ -52,7 +52,7 @@ class PatientModel(TimeStampModel):
     names = relationship('HumanNameModel', back_populates='patient')
 
     # One-to-many relationship with patient address table
-    adresses = relationship('AddressModel', back_populates='patient')
+    addresses = relationship('AddressModel', back_populates='patient')
 
     def __repr__(self):
         full_name = f'{self.names[0]}' if self.names else 'Unknown'
@@ -68,7 +68,7 @@ class AddressUse(PythonEnum):
 
 
 class AddressModel(TimeStampModel):
-    __tablename__ = 'adresses'
+    __tablename__ = 'addresses'
 
     id = Column(UUID, primary_key=True, index=True, default=uuid4)
     patient_id = Column(UUID, ForeignKey('patients.id'))
@@ -82,7 +82,7 @@ class AddressModel(TimeStampModel):
     country = Column(String)
 
     # Establish the inverse relationship with the Patients table
-    patient = relationship('PatientModel', back_populates='adresses')
+    patient = relationship('PatientModel', back_populates='addresses')
 
     def __repr__(self):
         return f'Address(id={self.id})'

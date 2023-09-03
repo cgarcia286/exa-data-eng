@@ -81,11 +81,11 @@ def parse_patient_data(patient: Patient) -> dict:
         patient.address
     )
     addresses = [AddressModel(**address) for address in addresses_data]
-    patient_instance.adresses = addresses
+    patient_instance.addresses = addresses
 
     patient_data.update({
         'names': human_names,
-        'adresses': addresses
+        'addresses': addresses
     })
 
     return patient_data

@@ -20,10 +20,20 @@ def load_fhir_data(path: str):
     transformed_data = []
 
     for filename in os.listdir(path):
-        if filename.endswith(".json"):
-            with open(os.path.join(path, filename), "r") as json_file:
-                fhir_data = json.load(json_file)
-                transformed_data.extend(parse_fhir_data(fhir_data))
+        if filename.endswith('.json'):
+            with open(os.path.join(path, filename), 'r') as json_file:
+                try:
+                    fhir_data = json.load(json_file)
+                except OSError as os_error:
+                    LOGGER.error(
+                        f'Error reading file {filename}: {str(os_error)}'
+                    )
+                except json.JSONDecodeError as json_error:
+                    LOGGER.error(
+                        f'Error decoding JSON in file {filename}: '
+                        f'{str(json_error)}')
+                else:
+                    transformed_data.extend(parse_fhir_data(fhir_data))
 
     return transformed_data
 
@@ -67,7 +77,7 @@ def parse_patient_data(patient: Patient) -> dict:
         'drivers_license': drivers_license,
         'passport_number': passport_number,
         'phone_number': patient.telecom[0].value,
-        'marital_status': patient.maritalStatus.text,
+        'marital_status': patient.maritalStatus.text
     }
 
     patient_instance = PatientModel(**patient_data)

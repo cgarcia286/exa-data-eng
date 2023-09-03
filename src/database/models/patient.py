@@ -81,6 +81,10 @@ class AddressModel(TimeStampModel):
     postal_code = Column(String)
     country = Column(String)
 
+    @property
+    def postalCode(self):
+        return self.postal_code
+
     # Establish the inverse relationship with the Patients table
     patient = relationship('PatientModel', back_populates='addresses')
 

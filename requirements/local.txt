@@ -2,4 +2,9 @@
 
 # Code quality dependencies
 #############################################################################
-flake8==6.1.0
+flake8==6.1.0           # https://flake8.pycqa.org/en/latest/index.html
+
+# Dependencies for testing
+#############################################################################
+pytest==7.4.1           # https://docs.pytest.org/en/stable/
+pytest-cov==4.1.0       # https://pytest-cov.readthedocs.io

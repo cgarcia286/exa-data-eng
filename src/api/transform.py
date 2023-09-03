@@ -10,7 +10,7 @@ from fhir.resources.identifier import Identifier
 from fhir.resources.patient import Patient
 
 from config.logger_config import setup_logger
-from models.patient import AddressModel, HumanNameModel, PatientModel
+from database.models.patient import AddressModel, HumanNameModel, PatientModel
 
 LOGGER = setup_logger(__name__)
 

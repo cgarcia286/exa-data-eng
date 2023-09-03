@@ -6,7 +6,7 @@ from fhir.resources.humanname import HumanName
 from sqlalchemy.orm import Session
 
 from config.logger_config import setup_logger
-from models.patient import AddressModel, HumanNameModel, PatientModel
+from database.models.patient import AddressModel, HumanNameModel, PatientModel
 from utils.db import compare_data, item_exists
 
 LOGGER = setup_logger(__name__)

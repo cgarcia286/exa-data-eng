@@ -252,3 +252,6 @@ $RECYCLE.BIN/
 
 # Container volume to save data locally
 pgdata/
+
+# Directory where the logfiles are stored in the container
+logs/

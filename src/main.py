@@ -24,6 +24,7 @@ def main():
         # Handle the error gracefully to prevent the program crashes
         parsed_data = []
     store_data_in_database(session, parsed_data)
+    LOGGER.info('Process completed successfully!!!')
 
 
 if __name__ == "__main__":

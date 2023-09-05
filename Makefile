@@ -5,8 +5,18 @@ build:               ## Build docker image for the application
 build: stop
 	docker-compose build
 
+one-run:             ## Executes main.py to test the script locally
+one-run: stop start-bg
+	docker-compose exec app python src/main.py
+	docker-compose down
+
+run-tests:           ## Start a container and run test suite for the app
+run-tests: start-bg
+	docker-compose exec app pytest --cov=src/ --cov-report term-missing
+	docker-compose down
+
 shell:               ## Run container to load shell
-	docker-compose run app /bin/bash
+	docker-compose run app /bin/sh
 
 start-bg:            ## Starts container in detached mode
 	docker-compose up -d

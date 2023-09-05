@@ -1,0 +1,1 @@
+* * * * * /usr/local/bin/python /app/src/main.py | tee -a /app/logs/logfile_$(date +\%Y\%m\%d).log

@@ -6,7 +6,7 @@ An external system / supplier is sending patient data to our platform using the 
 ## The Solution
 The proposed solution for this project was to use automation with **python** commands mainly.
 
-For this, a cron job was created to allow the manipulation of the data coming from the external system / supplier to be stored in a relational database using PostgreSQL.
+For this, a cron job was created to allow the manipulation of the data coming from the external system / supplier to be stored in a relational database using **PostgreSQL**.
 
 To handle transactions with the database safely, **SQLAlchemy** was used as the main library and its ORM to manage SQL queries. Most of the queries in this project take into account the use of inserts or updates in the DB and DDL commands to create tables for example.
 
@@ -16,7 +16,7 @@ For the preparation of this project, it was assumed that the information could p
 
 The cron job specifies running the application's main command every minute, but this can be configured based on how often the system sends the FHIR information.
 
-For the development of unit tests, **pytest** was used to be able to manage fixtures in a simple way and at the same time the pytest-coverage tool was used to get an idea of ​​the areas not covered by the unit or integration tests.
+For the development of unit tests, **pytest** was used to be able to manage fixtures in a simple way and at the same time the **pytest-coverage** tool was used to get an idea of ​​the areas not covered by the unit or integration tests.
 
 Finally, to manage the development environment, **Docker** was used in order to have an application that could be ready to be easily deployed, through a tool that allows CI/CD, which provides greater robustness to the development cycle.
 
@@ -57,7 +57,7 @@ Now you should be able to run make commands in your machine. If you still have t
 ### Useful commands
 
 - **`make one-run`**: runs the **main.py** one time only without the cron job and keep alive the container to check the DB results.
-- **`make stop`** stops the application and other containers that might be started as a result of other processes..
+- **`make stop`** stops the application and other containers that might be started as a result of other processes.
 - **`make shell`** spins up a container and load the shell.
 
 
@@ -80,14 +80,15 @@ Then after, you have to run **make start** or **make one-run** command to spin u
 ## How to run tests
 For your convenience, there is a command to run the test suite for the application wich already include the project coverage. If you want to run the test suite, use the `make run-tests` commands. If you want to run specific tests, the you can follow this steps:
 
-1. run: `make start-bg` to run a container in the background.
-2. run: `make shell` to get access to your container.
-3. run the command you want to run your specific tests using **pytest**, i.e. `pytest src/`.
+1. run: `make shell` to get access to your container.
+2. run the command and the arguments you want to include in your tests using **pytest**, i.e. `pytest src/ -vv`.
 
 ## Next steps aka TODO / pending:
 
-Due to the short time to complete this POC and taking into account that it was a project to evaluate the skills of each candidate for the Data Engineer position, it was not considered to include migrations in this stage. So it is recommended to include alembic in this project to keep track on schemas changes.
+Due to the short time to complete this POC and taking into account that it was a project to evaluate the skills of each candidate for the Data Engineer position, it was not considered to include migrations in this stage. So it is recommended to include **alembic** in this project to keep track on schemas changes.
 
 After integrate alembic in the project it will be nice to have a way to restore the Database for development environment. So the plan is to create a **Makefile** command to restore the DB to the initial state where is posible.
+
+It is important to mention that for this project only the Patient resource and some elements such as names or addresses were considered, since the FHIR standard handles multiple resources that would not be possible to cover in the proposed time to provide a solution.
 
 Other thing that has to be consider is the fact of change the schemas to update models to map FHIR resources properly found at [FHIR Resource Types](https://www.hl7.org/fhir/resourcelist.html).

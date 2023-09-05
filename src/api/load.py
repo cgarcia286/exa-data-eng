@@ -1,8 +1,6 @@
 """Save transformed data into PostgreSQL"""
 from typing import List
 
-from fhir.resources.address import Address
-from fhir.resources.humanname import HumanName
 from sqlalchemy.orm import Session
 
 from config.logger_config import setup_logger
@@ -89,7 +87,7 @@ def _create_or_update_patients(
 def _create_or_update_names(
     session: Session,
     patient: PatientModel,
-    names: List[HumanName]
+    names: list
 ):
     """
     Creates or updates names associated with a patient in the database using an
@@ -99,8 +97,7 @@ def _create_or_update_names(
     the database.
     :param PatientModel patient: The PatientModel instance to which the names
     are associated.
-    :param List[HumanName] names: A list of HumanName instances representing
-    names to be created or updated.
+    :param list names: List of patient names to be created or updated.
 
     This function iterates through the provided list of names for a patient,
     checks if each name already exists in the database based on the patient's
@@ -108,46 +105,35 @@ def _create_or_update_names(
     compares the provided name data with the existing name data and updates
     any changed fields.
     """
-    for name in names:
-        name.__dict__.pop('patient')
-        name.__dict__.pop('_sa_instance_state')
-        name_data = name.__dict__
+    existing_names = session.query(
+        HumanNameModel
+    ).filter_by(patient_id=patient.id).all()
 
-        existing_names = session.query(
-            HumanNameModel
-        ).filter_by(patient_id=patient.id).all()
+    # Create a set of existing names for efficient lookup
+    existing_names_set = set(
+        (name.family, name.given, name.use.value) for name in existing_names
+    )
 
-        name_exists = any(
-            n.family == name_data['family'] and
-            n.given == name_data['given'] and
-            n.use.value == name_data['use']
-            for n in existing_names
-        )
+    new_names = []
+    for name_data in names:
+        name_key = (name_data['family'], name_data['given'], name_data['use'])
 
-        if not name_exists:
+        if name_key not in existing_names_set:
             LOGGER.info(f'Adding new name for patient {patient.id}')
-            session.add(HumanNameModel(**name_data))
-            session.commit()
-        else:
-            name_to_update = session.query(HumanNameModel).filter_by(
-                patient_id=patient.id,
-                given=name_data['given'],
-                family=name_data['family']
-            ).first()
-            name_to_update.use = name_to_update.use.value
+            new_names.append(HumanNameModel(**name_data))
+            existing_names_set.add(name_key)
 
-            updated_fields = compare_data(name_to_update, name_data)
-            if updated_fields:
-                for field, value in updated_fields.items():
-                    setattr(name_to_update, field, value)
-                LOGGER.info(f'Updating name: {name_to_update.id}')
-                session.commit()
+    # Add all new names to the patient's names relationship
+    patient.names.extend(new_names)
+
+    # Commit the changes to the database
+    session.commit()
 
 
 def _create_or_update_addresses(
     session: Session,
     patient: PatientModel,
-    addresses: List[Address]
+    addresses: list
 ):
     """
     Creates or updates addresses associated with a patient in the database
@@ -157,8 +143,7 @@ def _create_or_update_addresses(
     the database.
     :param PatientModel patient: The PatientModel instance to which the
     addresses are associated.
-    :param List[Address] addresses: A list of Address instances representing
-    addresses to be created or updated.
+    :param list addresses: A list of addresses to be created or updated.
 
     This function iterates through the provided list of addresses for a
     patient, checks if each address already exists in the database based on the
@@ -166,15 +151,11 @@ def _create_or_update_addresses(
     function compares the provided address data with the existing address data
     and updates any changed fields.
     """
-    for address in addresses:
-        address.__dict__.pop('patient')
-        address.__dict__.pop('_sa_instance_state')
-        address_data = address.__dict__
+    existing_addresses = session.query(
+        AddressModel
+    ).filter_by(patient_id=patient.id).all()
 
-        existing_addresses = session.query(
-            AddressModel
-        ).filter_by(patient_id=patient.id).all()
-
+    for address_data in addresses:
         address_exists = any(
             a.line == address_data['line'] and
             a.city == address_data['city'] and
@@ -184,7 +165,8 @@ def _create_or_update_addresses(
 
         if not address_exists:
             LOGGER.info(f'Adding new address for patient {patient.id}')
-            session.add(AddressModel(**address_data))
+            new_address = AddressModel(**address_data)
+            patient.addresses = [new_address]
             session.commit()
 
         # TODO: Implementation for Update on change

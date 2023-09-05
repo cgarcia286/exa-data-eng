@@ -10,7 +10,6 @@ from fhir.resources.identifier import Identifier
 from fhir.resources.patient import Patient
 
 from config.logger_config import setup_logger
-from database.models.patient import AddressModel, HumanNameModel, PatientModel
 
 LOGGER = setup_logger(__name__)
 
@@ -98,26 +97,10 @@ def parse_patient_data(patient: Patient) -> dict:
         'drivers_license': drivers_license,
         'passport_number': passport_number,
         'phone_number': patient.telecom[0].value,
-        'marital_status': patient.maritalStatus.text
+        'marital_status': patient.maritalStatus.text,
+        'names': parse_patient_names(patient, patient.name),
+        'addresses': parse_patient_addresses(patient, patient.address)
     }
-
-    patient_instance = PatientModel(**patient_data)
-
-    names_data = parse_patient_names(patient, patient.name)
-    human_names = [HumanNameModel(**name) for name in names_data]
-    patient_instance.names = human_names
-
-    addresses_data = parse_patient_addresses(
-        patient,
-        patient.address
-    )
-    addresses = [AddressModel(**address) for address in addresses_data]
-    patient_instance.addresses = addresses
-
-    patient_data.update({
-        'names': human_names,
-        'addresses': addresses
-    })
 
     return patient_data
 

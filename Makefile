@@ -16,7 +16,9 @@ run-tests: start-bg
 	docker-compose down
 
 shell:               ## Run container to load shell
+shell: start-bg
 	docker-compose run app /bin/sh
+	docker-compose down
 
 start-bg:            ## Starts container in detached mode
 	docker-compose up -d

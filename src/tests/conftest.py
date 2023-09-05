@@ -8,6 +8,11 @@ import pytest
 from database.models.base import Base
 from database.models.patient import PatientModel
 
+DATABASE_URL = "postgresql://exa-data:exa-data@db.test/exa-data-test"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 @pytest.fixture
 def mock_os_listdir():
@@ -77,7 +82,7 @@ def mock_json_load(sample_fhir_data):
 
 @pytest.fixture
 def sample_patient():
-    # Creates a sample Patient object with attributes necessary for the test
+    # Creates a sample Patient object with basic attributes
     return PatientModel(
         id='53447e34-ade0-4963-86d7-aa081978ea6d',
         names=[],
@@ -85,17 +90,26 @@ def sample_patient():
     )
 
 
-# TODO: Change db engine with posgresql
-# Configure the in-memory database (SQLite) for testing
-@pytest.fixture(scope="module")
-def db():
-    engine = create_engine('sqlite:///:memory:')
-    Session = sessionmaker(bind=engine)
-    session = Session()
+# Configure the testing database
+@pytest.fixture(scope='function')
+def db_session():
+    # Establishes a connection to the test database
+    connection = engine.connect()
 
+    # Create tables if does not exist
     Base.metadata.create_all(engine)
-    yield session
 
-    # Log off and delete the in-memory database
-    session.close()
-    engine.dispose()
+    # Create a top-level transaction for testing
+    transaction = connection.begin()
+
+    # Create SQLAlchemy session for testing
+    session = SessionLocal(bind=connection)
+
+    # Provides test session
+    try:
+        yield session
+    finally:
+        # Clean after DB each test
+        session.close()
+        transaction.rollback()
+        connection.close()

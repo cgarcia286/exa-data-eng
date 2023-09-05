@@ -35,7 +35,7 @@ def load_fhir_data(path: str) -> list:
     :raises json.JSONDecodeError: If there is an issue decoding JSON content
     from a file.
     """
-    LOGGER.info(f'Loading Data from {path} directory')
+    LOGGER.info(f'Processing Data from {path} directory')
     transformed_data = []
 
     for filename in os.listdir(path):

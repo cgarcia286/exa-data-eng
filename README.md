@@ -56,9 +56,9 @@ Now you should be able to run make commands in your machine. If you still have t
 
 ### Useful commands
 
-- `**make one-run**`: runs the **main.py** one time only without the cron job and keep alive the container to check the DB results.
-- run: `**make stop**` to stop the application and other containers that could be started as consequense of other processes.
-- run `**make shell**` to spin up a container and load the shell.
+- **`make one-run`**: runs the **main.py** one time only without the cron job and keep alive the container to check the DB results.
+- **`make stop`** stops the application and other containers that might be started as a result of other processes..
+- **`make shell`** spins up a container and load the shell.
 
 
 ## How to check results in DB
